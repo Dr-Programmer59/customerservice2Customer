@@ -158,11 +158,11 @@ function Page() {
 
   const handleChatNow = async (e) => {
     try {
-      let { data } = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/customer/signup`, { phone: phonenumber, status: "waiting" });
+      const  { data } = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/customer/signup`, { phone: phonenumber, status: "waiting" });
       console.log("the data after login is data ", data)
       setuserDetail(data.customer)
       socket.emit("new-connection", { roomId: data.customer._id, just: "check", customerNumber: phonenumber, role: "customer" })
-      if (data.success) {
+      if (data.sucess) {
         console.log("customer Created")
         await createConversation({ roomId: data.customer._id })
         socket.emit("send-request:admin:subadmin", { customerNumber: phonenumber, customerId: data.customer._id })
@@ -171,6 +171,7 @@ function Page() {
         setcurrentConversation(conversationData)
       } else {
         if (data.customer) {
+          console.log("in else ",data)
           let conversationData = await getConversation({ roomId: data.customer._id })
           setcurrentConversation(conversationData)
           const messages_ = await getMessages(conversationData._id);

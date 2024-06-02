@@ -99,7 +99,7 @@ function Page() {
     return () => {
       socket.off("receive-msg", handleReceiveMessage);
     }
-  }, [handleReceiveMessage]);
+  }, [socket,handleReceiveMessage]);
 
   const handleUpload = useCallback(() => {
     if (imageSrc) {

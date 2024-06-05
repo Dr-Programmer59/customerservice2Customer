@@ -7,6 +7,7 @@ import MessageBox from '@/components/MessageBox';
 import { FaWhatsappSquare, FaWhatsapp } from "react-icons/fa";
 import { storage } from '@/components/firebase';
 import { createConversation, getConversation, getMessages, newMessages } from '@/components/service/api';
+import { v4 as uuidv4 } from 'uuid';
 
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
@@ -25,10 +26,11 @@ function Page() {
   const mediaRecorder = useRef();
   const [customerDetail, setcustomerDetail] = useState({})
   const [currentConversation, setcurrentConversation] = useState({})
-
-  const handleUploadAudio = useCallback((blob) => {
-    if (blob) {
-      const file = new File([blob], 'audio.wav', { type: 'audio/wav' });
+const [recordingDelete, setrecordingDelete] = useState(false)
+  const handleUploadAudio = (blob) => {
+    if (blob && !recordingDelete) {
+      const randomId = crypto.randomUUID();
+      const file = new File([blob], `${randomId}.wav`, { type: 'audio/wav' });
       const storageRef = ref(storage, `audio/${file.name}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -59,11 +61,27 @@ function Page() {
         }
       );
     }
-  }, [currentConversation, userDetail, message]);
+  };
 
+
+  useEffect(() => {
+    
+    if(recordingDelete){
+     console.log("this is delte recording delete1",recordingDelete)
+     setRecording(false);
+     mediaRecorder.current=null;
+    setTimeout(() => {
+      setrecordingDelete(false)
+    }, 2000);
+   
+    }
+    
+  }, [recordingDelete])
+  
   const startRecording = async () => {
     try {
       if (!recording) {
+        console.log("recoridng agin")
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaRecorder.current = new MediaRecorder(stream);
 
@@ -74,15 +92,22 @@ function Page() {
         };
 
         mediaRecorder.current.onstop = () => {
+          if(!recordingDelete){
           const blob = new Blob(chunks, { type: 'audio/webm' });
+          audioBlob.current=blob;
           handleUploadAudio(blob)
+          }
+          
         };
 
         mediaRecorder.current.start();
         setRecording(true);
       } else {
+        console.log("sending again")
         mediaRecorder.current.stop();
         setRecording(false);
+      
+      
       }
     } catch (error) {
       console.error('Error accessing microphone:', error);
@@ -103,9 +128,11 @@ function Page() {
 
   const handleUpload = useCallback(() => {
     if (imageSrc) {
-      const storageRef = ref(storage, `images/${imageSrc.name}`);
+      const randomId = crypto.randomUUID();
+      const storageRef = ref(storage, `images/${randomId}-${imageSrc.name}`);
       const uploadTask = uploadBytesResumable(storageRef, imageSrc);
-      console.log("here")
+ 
+      
       uploadTask.on(
         "state_changed",
         (snapshot) => {
@@ -159,7 +186,6 @@ function Page() {
   const handleChatNow = async (e) => {
     try {
       const  { data } = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/customer/signup`, { phone: phonenumber, status: "waiting" });
-      console.log("the data after login is data ", data)
       setuserDetail(data.customer)
       socket.emit("new-connection", { roomId: data.customer._id, just: "check", customerNumber: phonenumber, role: "customer" })
       if (data.sucess) {
@@ -201,7 +227,7 @@ function Page() {
         </div>
       }
 
-      <div className='gradint p-3 rounded-t-md flex justify-between items-center shadow-md shadow-[#330867]'>
+      <div className='bg-gradient p-3 rounded-t-md flex justify-between items-center shadow-md shadow-[#330867]'>
         <div className='flex gap-2 items-center'>
           <img src='Images/bot.png' className='w-16 h-16 rounded-full' />
           <div className=''>
@@ -211,7 +237,7 @@ function Page() {
         </div>
       </div>
       <div className="shadow-lg bg-white p-4">
-        <MessageBox user={userDetail} messages={messages} setMessages={setMessages} message={message} setmessage={setmessage} handleSendMessage={handleSendMessage} audioBlob={audioBlob} startRecording={startRecording} imageSrc={imageSrc} setImageSrc={setImageSrc} />
+        <MessageBox setrecordingDelete={setrecordingDelete} user={userDetail} messages={messages} setMessages={setMessages} message={message} setmessage={setmessage} handleSendMessage={handleSendMessage} audioBlob={audioBlob} startRecording={startRecording} imageSrc={imageSrc} setImageSrc={setImageSrc} />
       </div>
     </>
   )

@@ -7,6 +7,7 @@ import { CiImageOff, CiImageOn } from "react-icons/ci";
 import axios from 'axios';
 import { FaFileImage } from "react-icons/fa";
 import Recording from "./Recording2.json"
+import dynamic from 'next/dynamic';
 const LottieAnimation = dynamic(() => import('./LottieAnimation'), {
     ssr: false,
 });

@@ -7,7 +7,9 @@ import { CiImageOff, CiImageOn } from "react-icons/ci";
 import axios from 'axios';
 import { FaFileImage } from "react-icons/fa";
 import Recording from "./Recording2.json"
-import Lottie from "lottie-react";
+const LottieAnimation = dynamic(() => import('./LottieAnimation'), {
+    ssr: false,
+});
 import { IoMdMic } from "react-icons/io";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
@@ -175,7 +177,7 @@ function MessageBox({ setrecordingDelete, user, messages, message, setmessage, h
                             <>
                                 <div class="absolute inset-y-0 end-0 pr-4  flex items-center  ">
                                     <button onClick={() => { startRecording(); setisRecording(!isRecording); console.log("preessed") }}>
-                                        <Lottie className='w-[30px] h-[40px] ' animationData={Recording} loop={true} />
+                                    <LottieAnimation  />
                                     </button>
 
                                 </div>

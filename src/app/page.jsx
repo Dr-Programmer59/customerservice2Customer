@@ -183,7 +183,13 @@ const [recordingDelete, setrecordingDelete] = useState(false)
     setImageSrc(null)
   }
 
-  const handleChatNow = async (e) => {
+
+  const handleClick = (e) => {
+   localStorage.setItem("phone",phonenumber);
+    handleChatNow(phonenumber);
+  }
+
+  const handleChatNow = async (phonenumber) => {
     try {
       const  { data } = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/customer/signup`, { phone: phonenumber, status: "waiting" });
       setuserDetail(data.customer)
@@ -211,6 +217,19 @@ const [recordingDelete, setrecordingDelete] = useState(false)
     setLoadingHide(true);
   }
 
+  useEffect(() => {
+    const phone = localStorage.getItem("phone");
+    if(phone){
+
+      handleChatNow(phone);
+    }
+  },[])
+
+  const handleLogout = async () => {
+    localStorage.removeItem("phone",null);
+    window.location.reload()
+  }
+
   return (
     <>
       {!loadingHide &&
@@ -223,7 +242,7 @@ const [recordingDelete, setrecordingDelete] = useState(false)
             </div>
             <input type="text" value={phonenumber} onChange={(e) => setphonenumber(e.target.value)} id="input-group-1" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Enter your what's app" />
           </div>
-          <button className='py-2 px-4 rounded-3xl bg-white text-[#330867]' onClick={handleChatNow}>Chat Now !</button>
+          <button className='py-2 px-4 rounded-3xl bg-white text-[#330867]' onClick={handleClick}>Chat Now !</button>
         </div>
       }
 
@@ -235,6 +254,7 @@ const [recordingDelete, setrecordingDelete] = useState(false)
             <p className='text-white/80'>we are online</p>
           </div>
         </div>
+        <button className='mr-7 text-white text-2xl' onClick={handleLogout}>Logout</button>
       </div>
       <div className="shadow-lg bg-white p-4">
         <MessageBox setrecordingDelete={setrecordingDelete} user={userDetail} messages={messages} setMessages={setMessages} message={message} setmessage={setmessage} handleSendMessage={handleSendMessage} audioBlob={audioBlob} startRecording={startRecording} imageSrc={imageSrc} setImageSrc={setImageSrc} />

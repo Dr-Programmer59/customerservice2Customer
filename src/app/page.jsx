@@ -163,8 +163,8 @@ const [recordingDelete, setrecordingDelete] = useState(false)
     }
   }, [imageSrc, currentConversation, userDetail, message]);
 
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
+  const handleSendMessage = async () => {
+  
     if (imageSrc) {
       handleUpload();
     } else {

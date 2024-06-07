@@ -55,11 +55,11 @@ function MessageBox({ setrecordingDelete, user, messages, message, setmessage, h
                 <div id="msgbox" class="  overflow-y-auto flex flex-col mb-4">
                     {messages && messages.map((msg) => {
 
-                    
+
 
                         return msg.senderId === user._id ?
                             (
-                                <div className="flex justify-end mb-4 "  key={msg.id}>
+                                <div className="flex justify-end mb-4 " key={msg.id}>
                                     <div className="mr-2 p-2 md:py-3 md:px-4 shadow-md text-black/80 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl bg-yellow-100">
                                         {msg.type === "audio" ? (
                                             <audio src={msg.sourceLink} controls />
@@ -145,12 +145,19 @@ function MessageBox({ setrecordingDelete, user, messages, message, setmessage, h
                     <input
                         onChange={(e) => setmessage(e.target.value)}
                         value={message}
-                        type="text" id="input-group-1" class="  bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full h-full p-3 ps-10 pl-[50px] pr-[30px]  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Type a message " />
-                    
+
+                        onKeyDown={(event) => {
+                            if (event.key === 'Enter') {
+                                event.preventDefault();  // Optional: Prevent the default action (form submission, etc.)
+                                handleSendMessage();
+                            }
+                        }}
+                        type="text" id="input-group-1" class="  bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full h-full p-3 ps-10 pl-[9vh] pr-[30px]  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Type a message " />
+
                     {
 
-                    message!="" || imageSrc?
-                    <div class="absolute inset-y-0 end-0  flex items-center pr-4 ">
+                        message != "" || imageSrc ?
+                            <div class="absolute inset-y-0 end-0  flex items-center pr-4 ">
                                 <button onClick={handleSendMessage}>
                                     <IoSend className='w-[35px] h-[35px]' />
                                 </button>
@@ -160,35 +167,35 @@ function MessageBox({ setrecordingDelete, user, messages, message, setmessage, h
 
                             </div>
 
-                    :
-                    <>
-                    
-                    {
-                        isRecording == false ?
-                            <div class="absolute inset-y-0 end-0  flex items-center pr-4 ">
-                                <button onClick={() => { startRecording(); setisRecording(!isRecording); console.log("preessed") }}>
-                                    <IoMdMic className='w-[35px] h-[35px]' />
-                                </button>
-
-
-
-
-                            </div>
                             :
                             <>
-                                <div class="absolute inset-y-0 end-0 pr-4  flex items-center  ">
-                                    <button onClick={() => { startRecording(); setisRecording(!isRecording); console.log("preessed") }}>
-                                    <LottieAnimation  />
-                                    </button>
 
-                                </div>
+                                {
+                                    isRecording == false ?
+                                        <div class="absolute inset-y-0 end-0  flex items-center pr-4 ">
+                                            <button onClick={() => { startRecording(); setisRecording(!isRecording); console.log("preessed") }}>
+                                                <IoMdMic className='w-[35px] h-[35px]' />
+                                            </button>
+
+
+
+
+                                        </div>
+                                        :
+                                        <>
+                                            <div class="absolute inset-y-0 end-0 pr-4  flex items-center  ">
+                                                <button onClick={() => { startRecording(); setisRecording(!isRecording); console.log("preessed") }}>
+                                                    <LottieAnimation />
+                                                </button>
+
+                                            </div>
+                                        </>
+
+                                }
                             </>
 
+
                     }
-                    </>
-
-
-                }
                 </div>
                 {/* <div className='space-y-3 relative'>
                     {imageSrc && (
